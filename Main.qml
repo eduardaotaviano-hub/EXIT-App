@@ -54,6 +54,10 @@ Window {
             Layout.fillHeight: true
             onAbrirCriarRole: paginaAtual = 2
             onAbrirConfiguracoes: paginaAtual = 4
+            onAbrirEditarRole: function(idEvento, titulo, local, dataEvento) {
+                paginaEditarRole.prepararEdicao(idEvento, titulo, local, dataEvento)
+                paginaAtual = 5
+            }
         }
 
         CriarRole {
@@ -80,6 +84,19 @@ Window {
         Configuracoes {
             Layout.fillWidth: true
             Layout.fillHeight: true
+            onVoltarParaPerfil: paginaAtual = 1
+        }
+
+        EditarRole {
+            id: paginaEditarRole
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            onEventoAtualizado: {
+                paginaPerfil.carregarEventosDoBanco()
+                paginaAtual = 1
+            }
+
             onVoltarParaPerfil: paginaAtual = 1
         }
     }

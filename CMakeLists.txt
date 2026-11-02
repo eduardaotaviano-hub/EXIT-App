@@ -23,6 +23,7 @@ qt_add_qml_module(appEXIT
         EventoCriado.qml
         Configuracoes.qml
         CardEvento.qml
+        EditarRole.qml
     RESOURCES
         fotos/dog.jpg
         fotos/pessoa.png

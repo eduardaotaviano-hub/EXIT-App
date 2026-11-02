@@ -1,10 +1,10 @@
 # EXIT — Aplicativo de gerenciamento de eventos
 
-Projeto acadêmico desenvolvido com **Qt Creator**, **Qt Quick/QML** e **SQLite**, utilizando o módulo **Qt Quick LocalStorage** para armazenamento local.
+Projeto acadêmico desenvolvido com **Qt Creator**, **C++**, **Qt Quick/QML** e **SQLite**, utilizando o módulo **Qt Quick LocalStorage** para persistência local dos dados.
 
 ## Sobre o projeto
 
-EXIT é um protótipo de aplicativo desktop para criação e visualização de eventos. A interface foi construída em QML e os dados dos eventos são armazenados localmente em um banco SQLite.
+EXIT é um protótipo de aplicativo desktop para criação e gerenciamento de eventos. A interface foi construída em QML e os dados são armazenados localmente em um banco SQLite.
 
 ## Tecnologias
 
@@ -15,28 +15,28 @@ EXIT é um protótipo de aplicativo desktop para criação e visualização de e
 - Qt Quick LocalStorage
 - CMake
 
-## Funcionalidades presentes no código
+## Funcionalidades
 
-- Criação da tabela `eventos`, caso ainda não exista.
-- Inserção de eventos com título, local e data.
-- Consulta e exibição dos eventos armazenados.
-- Contagem de registros para inserir dados de demonstração quando a tabela está vazia.
-- Exclusão de registros e limpeza de eventos sem título.
+- Criar eventos com título, local e data.
+- Consultar e listar eventos armazenados.
+- Editar título, local e data de um evento existente.
+- Excluir eventos individualmente, com confirmação.
+- Manter as alterações no banco local após fechar e reabrir o aplicativo.
 
-## Implementação SQL
+## Banco de dados e SQL
 
 O banco é aberto com `LocalStorage.openDatabaseSync()` usando o identificador `ExitDB`.
 
-A tabela criada no código contém:
+A tabela `eventos` contém os seguintes campos:
 
 | Campo | Tipo | Finalidade |
 |---|---|---|
-| `id` | INTEGER PRIMARY KEY AUTOINCREMENT | Identificador do evento |
+| `id` | INTEGER PRIMARY KEY AUTOINCREMENT | Identificador único do evento |
 | `titulo` | TEXT | Nome do evento |
 | `local` | TEXT | Local do evento |
 | `dataEvento` | TEXT | Data/horário informado |
 
-Exemplos de comandos SQL encontrados no projeto:
+Principais operações SQL utilizadas no projeto:
 
 ```sql
 CREATE TABLE IF NOT EXISTS eventos (
@@ -49,33 +49,53 @@ CREATE TABLE IF NOT EXISTS eventos (
 INSERT INTO eventos (titulo, local, dataEvento)
 VALUES (?, ?, ?);
 
-SELECT titulo, local, dataEvento FROM eventos;
+SELECT id, titulo, local, dataEvento
+FROM eventos
+ORDER BY id DESC;
 
-DELETE FROM eventos;
+UPDATE eventos
+SET titulo = ?, local = ?, dataEvento = ?
+WHERE id = ?;
+
+DELETE FROM eventos
+WHERE id = ?;
 ```
 
-As inserções utilizam parâmetros (`?`) para enviar os valores separadamente da instrução SQL.
+As operações de inserção, atualização e exclusão utilizam parâmetros (`?`). A atualização e a exclusão identificam o registro pelo `id`, evitando alterar ou remover os demais eventos.
+
+## Operações CRUD demonstradas
+
+- **Create:** criação de eventos (`INSERT`).
+- **Read:** consulta e listagem (`SELECT`).
+- **Update:** edição de eventos (`UPDATE`).
+- **Delete:** exclusão individual de eventos (`DELETE`).
 
 ## Estrutura do projeto
 
 - `main.cpp`: inicialização da aplicação Qt.
 - `Main.qml`: janela principal e navegação entre telas.
-- `Perfil.qml`: abertura do banco, criação da tabela, consultas e listagem dos eventos.
+- `Perfil.qml`: abertura do banco, criação da tabela, consultas, listagem e integração das ações dos eventos.
 - `CriarRole.qml`: formulário e gravação de novos eventos.
-- `CardEvento.qml`: componente visual para exibir cada evento.
+- `EditarRole.qml`: formulário e atualização de eventos existentes.
+- `CardEvento.qml`: componente visual dos cartões de eventos e ações disponíveis.
 - `EventoCriado.qml`: tela de confirmação.
 - `Configuracoes.qml`: tela de configurações.
 - `fotos/`: imagens utilizadas pela interface.
 
 ## Como abrir no Qt Creator
 
-1. Instale uma versão compatível do Qt 6 (o projeto original foi configurado com Qt 6.8).
+1. Instale o Qt 6 e os componentes de desenvolvimento compatíveis com seu sistema.
 2. Abra o arquivo `CMakeLists.txt` no Qt Creator.
-3. Selecione um kit Desktop compatível.
-4. Configure e compile o projeto.
+3. Selecione um kit Desktop compatível (o projeto foi testado com **Desktop Qt 6.9.2 MinGW 64-bit**).
+4. Configure o projeto, compile e execute.
 
-## Observações sobre o escopo
+## Testes realizados
 
-Este repositório apresenta o código-fonte de um projeto acadêmico. A compilação em outros computadores ainda precisa ser validada.
+No ambiente de desenvolvimento, foram realizados testes de compilação e execução, além de testes manuais de criação, consulta, edição e exclusão de eventos. Também foi verificado que as alterações persistem após fechar e reabrir o aplicativo.
 
-O banco SQLite é local ao aplicativo/usuário e é criado pelo LocalStorage em tempo de execução. A tela inicial possui campos de e-mail e senha, mas a versão atual não implementa autenticação real. O formulário também possui um campo de descrição, porém a versão atual não o grava na tabela.
+## Limitações conhecidas
+
+- O banco SQLite é local ao aplicativo/usuário; não há sincronização em nuvem.
+- A tela inicial possui campos de e-mail e senha, mas a versão atual não implementa autenticação real.
+- O formulário possui um campo de descrição, mas essa informação não é armazenada na tabela atual.
+- O projeto é um protótipo acadêmico; a interface e as funcionalidades podem ser ampliadas em versões futuras.

@@ -51,12 +51,14 @@ Rectangle {
             })
         }
 
-        function limparEventos() {
+        function excluirEvento(idEvento) {
             var db = abrirBanco()
 
             db.transaction(function(tx) {
-                tx.executeSql("DELETE FROM eventos")
+                tx.executeSql("DELETE FROM eventos WHERE id = ?", [idEvento])
             })
+
+            carregarEventosDoBanco()
         }
 
         function apagarEventosVazios() {
@@ -75,12 +77,13 @@ Rectangle {
             var db = abrirBanco()
 
             db.transaction(function(tx) {
-                var rs = tx.executeSql("SELECT titulo, local, dataEvento FROM eventos")
+                var rs = tx.executeSql("SELECT id, titulo, local, dataEvento FROM eventos ORDER BY id DESC")
 
                 for (var i = 0; i < rs.rows.length; i++) {
                     var item = rs.rows.item(i)
 
                     eventosModel.append({
+                        id: item.id,
                         titulo: item.titulo,
                         local: item.local,
                         dataEvento: item.dataEvento
@@ -106,7 +109,33 @@ Rectangle {
     color: "white"
 
     signal abrirCriarRole()
-     signal abrirConfiguracoes()
+    signal abrirConfiguracoes()
+    signal abrirEditarRole(int idEvento, string titulo, string local, string dataEvento)
+
+    property int eventoSelecionadoId: -1
+
+    Dialog {
+        id: confirmarExclusaoDialog
+        title: "Excluir evento"
+        modal: true
+        width: parent.width - 40
+        anchors.centerIn: parent
+        standardButtons: Dialog.Yes | Dialog.No
+
+        Label {
+            text: "Tem certeza de que deseja excluir este evento?"
+            wrapMode: Text.WordWrap
+        }
+
+        onAccepted: {
+            if (eventoSelecionadoId !== -1) {
+                excluirEvento(eventoSelecionadoId)
+                eventoSelecionadoId = -1
+            }
+        }
+
+        onRejected: eventoSelecionadoId = -1
+    }
 
 
 
@@ -217,9 +246,19 @@ Rectangle {
                     model: eventosModel
 
                     delegate: CardEvento {
+                        eventoId: model.id
                         titulo: model.titulo
                         local: model.local
                         dataEvento: model.dataEvento
+
+                        onExcluirSolicitado: function(idEvento) {
+                            eventoSelecionadoId = idEvento
+                            confirmarExclusaoDialog.open()
+                        }
+
+                        onEditarSolicitado: function(idEvento, titulo, local, dataEvento) {
+                            abrirEditarRole(idEvento, titulo, local, dataEvento)
+                        }
                     }
                 }
             }
