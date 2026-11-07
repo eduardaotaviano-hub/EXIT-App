@@ -66,6 +66,67 @@ As operações CRUD implementadas são:
 
 A persistência foi testada durante a execução local da aplicação, inclusive após fechar e abrir o programa novamente.
 
+## Exemplos de implementação SQL
+
+O projeto utiliza o SQLite por meio do módulo **Qt Quick LocalStorage**, executando comandos SQL dentro de transações com `tx.executeSql()`.
+
+### 1. Criação da tabela (CREATE)
+
+A tabela `eventos` é criada caso ainda não exista:
+
+```sql
+CREATE TABLE IF NOT EXISTS eventos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    titulo TEXT,
+    local TEXT,
+    dataEvento TEXT
+);
+```
+
+### 2. Inserção de dados (INSERT)
+
+Novos eventos são inseridos utilizando parâmetros para os valores:
+
+```sql
+INSERT INTO eventos (titulo, local, dataEvento)
+VALUES (?, ?, ?);
+```
+
+### 3. Consulta de dados (SELECT)
+
+Os eventos são consultados e organizados pelo identificador:
+
+```sql
+SELECT id, titulo, local, dataEvento
+FROM eventos
+ORDER BY id DESC;
+```
+
+O projeto também utiliza `SELECT COUNT(*)` para verificar a quantidade de registros existentes.
+
+### 4. Atualização de dados (UPDATE)
+
+As informações de um evento são atualizadas pelo seu identificador:
+
+```sql
+UPDATE eventos
+SET titulo = ?, local = ?, dataEvento = ?
+WHERE id = ?;
+```
+
+### 5. Exclusão de dados (DELETE)
+
+A exclusão é realizada pelo identificador do evento, permitindo remover um registro específico:
+
+```sql
+DELETE FROM eventos
+WHERE id = ?;
+```
+
+Os comandos são executados por meio de transações do LocalStorage, e os dados ficam armazenados localmente no SQLite.
+
+Essas implementações demonstram a aplicação prática de operações SQL para cadastro, consulta, atualização e exclusão de registros.
+
 ## Como executar
 
 1. Instale o Qt Creator e o Qt 6.
