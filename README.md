@@ -1,101 +1,91 @@
-# EXIT — Aplicativo de gerenciamento de eventos
+# EXIT — Aplicativo de organização de eventos
 
-Projeto acadêmico desenvolvido com **Qt Creator**, **C++**, **Qt Quick/QML** e **SQLite**, utilizando o módulo **Qt Quick LocalStorage** para persistência local dos dados.
+O **EXIT** é um aplicativo desktop desenvolvido como projeto acadêmico, com o objetivo de facilitar a criação e o gerenciamento de eventos e encontros entre pessoas.
 
-## Sobre o projeto
-
-EXIT é um protótipo de aplicativo desktop para criação e gerenciamento de eventos. A interface foi construída em QML e os dados são armazenados localmente em um banco SQLite.
-
-## Tecnologias
-
-- C++
-- Qt 6 / Qt Quick
-- QML
-- SQLite
-- Qt Quick LocalStorage
-- CMake
+O projeto foi desenvolvido utilizando **C++, Qt Quick (QML) e SQLite**, explorando a integração entre interface gráfica e armazenamento local de dados.
 
 ## Funcionalidades
 
-- Criar eventos com título, local e data.
-- Consultar e listar eventos armazenados.
-- Editar título, local e data de um evento existente.
-- Excluir eventos individualmente, com confirmação.
-- Manter as alterações no banco local após fechar e reabrir o aplicativo.
+- **Cadastro de eventos:** criação de eventos com nome, local e data.
+- **Visualização:** listagem dos eventos cadastrados.
+- **Edição:** atualização das informações de eventos existentes.
+- **Exclusão:** remoção de eventos com confirmação da ação.
+- **Persistência de dados:** armazenamento local utilizando SQLite.
 
-## Banco de dados e SQL
+## Tecnologias utilizadas
 
-O banco é aberto com `LocalStorage.openDatabaseSync()` usando o identificador `ExitDB`.
+- C++
+- Qt 6
+- Qt Quick / QML
+- SQLite
+- CMake
+- Qt Creator
 
-A tabela `eventos` contém os seguintes campos:
+## Capturas de tela
 
-| Campo | Tipo | Finalidade |
-|---|---|---|
-| `id` | INTEGER PRIMARY KEY AUTOINCREMENT | Identificador único do evento |
-| `titulo` | TEXT | Nome do evento |
-| `local` | TEXT | Local do evento |
-| `dataEvento` | TEXT | Data/horário informado |
+### Perfil e listagem de eventos
 
-Principais operações SQL utilizadas no projeto:
+![Tela de perfil](Captura%20de%20tela%202026-11-02%20192557.png)
 
-```sql
-CREATE TABLE IF NOT EXISTS eventos (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    titulo TEXT,
-    local TEXT,
-    dataEvento TEXT
-);
+### Criação de eventos
 
-INSERT INTO eventos (titulo, local, dataEvento)
-VALUES (?, ?, ?);
+![Tela de criação](Captura%20de%20tela%202026-11-02%20192732.png)
 
-SELECT id, titulo, local, dataEvento
-FROM eventos
-ORDER BY id DESC;
+### Confirmação de cadastro
 
-UPDATE eventos
-SET titulo = ?, local = ?, dataEvento = ?
-WHERE id = ?;
+![Evento criado](Captura%20de%20tela%202026-11-02%20192632.png)
 
-DELETE FROM eventos
-WHERE id = ?;
-```
+### Edição de eventos
 
-As operações de inserção, atualização e exclusão utilizam parâmetros (`?`). A atualização e a exclusão identificam o registro pelo `id`, evitando alterar ou remover os demais eventos.
-
-## Operações CRUD demonstradas
-
-- **Create:** criação de eventos (`INSERT`).
-- **Read:** consulta e listagem (`SELECT`).
-- **Update:** edição de eventos (`UPDATE`).
-- **Delete:** exclusão individual de eventos (`DELETE`).
+![Tela de edição](Captura%20de%20tela%202026-11-02%20192813.png)
 
 ## Estrutura do projeto
 
-- `main.cpp`: inicialização da aplicação Qt.
-- `Main.qml`: janela principal e navegação entre telas.
-- `Perfil.qml`: abertura do banco, criação da tabela, consultas, listagem e integração das ações dos eventos.
-- `CriarRole.qml`: formulário e gravação de novos eventos.
-- `EditarRole.qml`: formulário e atualização de eventos existentes.
-- `CardEvento.qml`: componente visual dos cartões de eventos e ações disponíveis.
-- `EventoCriado.qml`: tela de confirmação.
-- `Configuracoes.qml`: tela de configurações.
-- `fotos/`: imagens utilizadas pela interface.
+| Arquivo | Responsabilidade |
+|---|---|
+| `main.cpp` | Inicialização da aplicação |
+| `Main.qml` | Estrutura principal da interface |
+| `Perfil.qml` | Tela de perfil e listagem de eventos |
+| `CriarRole.qml` | Formulário de criação |
+| `EditarRole.qml` | Formulário de edição |
+| `EventoCriado.qml` | Tela de confirmação |
+| `CardEvento.qml` | Componente visual dos eventos |
+| `Configuracoes.qml` | Tela de configurações |
+| `CMakeLists.txt` | Configuração de compilação |
 
-## Como abrir no Qt Creator
+## Banco de dados e operações CRUD
 
-1. Instale o Qt 6 e os componentes de desenvolvimento compatíveis com seu sistema.
-2. Abra o arquivo `CMakeLists.txt` no Qt Creator.
-3. Selecione um kit Desktop compatível (o projeto foi testado com **Desktop Qt 6.9.2 MinGW 64-bit**).
-4. Configure o projeto, compile e execute.
+O projeto utiliza SQLite por meio do Qt Quick LocalStorage para persistir os eventos localmente.
 
-## Testes realizados
+As operações CRUD implementadas são:
 
-No ambiente de desenvolvimento, foram realizados testes de compilação e execução, além de testes manuais de criação, consulta, edição e exclusão de eventos. Também foi verificado que as alterações persistem após fechar e reabrir o aplicativo.
+- **Create:** inserção de novos eventos.
+- **Read:** consulta e exibição dos eventos cadastrados.
+- **Update:** atualização dos dados de um evento.
+- **Delete:** exclusão de eventos específicos.
 
-## Limitações conhecidas
+A persistência foi testada durante a execução local da aplicação, inclusive após fechar e abrir o programa novamente.
 
-- O banco SQLite é local ao aplicativo/usuário; não há sincronização em nuvem.
-- A tela inicial possui campos de e-mail e senha, mas a versão atual não implementa autenticação real.
-- O formulário possui um campo de descrição, mas essa informação não é armazenada na tabela atual.
-- O projeto é um protótipo acadêmico; a interface e as funcionalidades podem ser ampliadas em versões futuras.
+## Como executar
+
+1. Instale o Qt Creator e o Qt 6.
+2. Abra o projeto pelo arquivo `CMakeLists.txt`.
+3. Selecione um kit Desktop compatível com a instalação.
+4. Configure o projeto e aguarde a compilação.
+5. Execute a aplicação pelo Qt Creator.
+
+## Aprendizados e conhecimentos aplicados
+
+O desenvolvimento do EXIT proporcionou experiência prática com:
+
+- Desenvolvimento de interfaces utilizando QML.
+- Integração entre C++ e Qt.
+- Manipulação de banco de dados SQLite.
+- Implementação das operações CRUD.
+- Organização de componentes e telas.
+- Persistência e gerenciamento de dados.
+- Compilação e execução de aplicações desktop.
+
+---
+
+**Projeto acadêmico desenvolvido para fins de aprendizado e demonstração de conhecimentos em desenvolvimento de software.**
